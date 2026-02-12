@@ -268,14 +268,13 @@ body{
 
 .videoWrap{
   width: 100%;
-  height: 520px;
+  height: 520px;                 
   border-radius: 14px;
   border: 1px solid rgba(255,255,255,.18);
   background: #000;
   overflow: hidden;
 }
 
-/* Оба элемента занимают рамку */
 #qVideo,
 #qImage{
   width: 100%;
@@ -284,14 +283,54 @@ body{
   border: 0;
   border-radius: 0;
   background: #000;
+  object-fit: contain;   
+}        
+
+.resultPage{
+  min-height: 100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding: 40px 16px;
 }
 
-/* ВИДЕО — без обрезки */
-#qVideo{
-  object-fit: contain;
+.resultBox{
+  max-width: 760px;
+  width: 100%;
+  padding: 40px 44px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+  border: 1px solid rgba(255,255,255,.25);
+  box-shadow: 0 30px 60px rgba(0,0,0,.35);
+  text-align:center;
 }
 
-/* КАРТИНКА — без обрезки */
-#qImage{
-  object-fit: contain;
+.resultTitle{
+  font-size: 34px;
+  font-weight: 900;
+  margin-bottom: 18px;
+  color: var(--accent2);
 }
+
+.resultText{
+  font-size: 20px;
+  line-height: 1.6;
+  color: #ffffff;
+}
+#resultScreen{
+  display: none;
+  margin: 60px auto;
+  max-width: 800px;
+  padding: 0 16px;
+}
+
+.resultBox{
+  padding: 40px 50px;
+  border-radius: 18px;
+
+  background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+  border: 1px solid rgba(255,255,255,.18);
+  box-shadow: 0 20px 40px rgba(0,0,0,.35);
+
+  text-align: center;
+} 
