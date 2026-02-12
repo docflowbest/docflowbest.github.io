@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Квест на 23 февраля</title>
+  <style>
+    :root{
+      --bg:#0f0f14;
+      --card:#171722;
+      --card2:#1f1f2e;
+      --text:#ffffff;
+      --muted:#c9c9d6;
+      --accent:#4dd0e1;
+      --accent2:#ffb74d;
+      --danger:#ff4081;
+      --ok:#7cff6b;
+      --shadow: 0 12px 30px rgba(0,0,0,.45);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 50% -10%, rgba(77,208,225,.20), transparent 60%),
+                  radial-gradient(900px 500px at 90% 10%, rgba(255,183,77,.18), transparent 60%),
+                  var(--bg);
+      color:var(--text);
+      overflow-x:hidden;
+      text-align:center;
+      min-height:100vh;
+    }
+    h1{
+      margin:24px 12px 6px;
+      font-size:34px;
+      color: var(--accent);
+      letter-spacing:.2px;
+    }
+    .subtitle{
+      margin:0 12px 18px;
+      font-size:18px;
+      color:var(--muted);
+    }
+    .wrap{
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 10px 14px 60px;
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      margin: 14px auto;
+      position: relative;
+      overflow:hidden;
+    }
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-40% -30%;
+      background: radial-gradient(circle at 30% 20%, rgba(77,208,225,.18), transparent 40%),
+                  radial-gradient(circle at 70% 60%, rgba(255,183,77,.14), transparent 42%);
+      transform: rotate(8deg);
+      pointer-events:none;
+    }
+    .content{
+      position:relative;
+      z-index:1;
+    }
+    .toprow{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(77,208,225,.12);
+      border: 1px solid rgba(77,208,225,.25);
+      color: var(--text);
+      font-weight:bold;
+      font-size:14px;
+    }
+    .progress{
+      width: 240px;
+      max-width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.10);
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.14);
+    }
+    .bar{
+      height:100%;
+      width:0%;
+      border-radius:999px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width .35s ease;
+    }
+    .question{
+      font-size: 22px;
+      line-height:1.25;
+      margin: 8px 8px 16px;
+      font-weight: 800;
+    }
+    .answers{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 0 4px 6px;
+    }
+    button.choice, button.primary, button.ghost{
+      border:none;
+      cursor:pointer;
+      border-radius: 14px;
+      padding: 12px 12px;
+      font-size: 16px;
+      font-weight: 700;
+      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+      box-shadow: 0 10px 18px rgba(0,0,0,.25);
+    }
+    button.choice{
+      color: var(--text);
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+      text-align:left;
+      min-height:54px;
+    }
+    button.choice:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.11);
+    }
+    .footerRow{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 14px;
+    }
+    button.primary{
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      color:#0b0b10;
+      padding: 12px 16px;
+    }
+    button.primary:hover{ transform: translateY(-1px); }
+    button.ghost{
+      background: transparent;
+      border:1px solid rgba(255,255,255,.18);
+      color: var(--text);
+      padding: 12px 16px;
+      box-shadow:none;
+    }
+    button.ghost:hover{ transform: translateY(-1px); background: rgba(255,255,255,.06); }
+
+    .resultTitle{
+      font-size: 26px;
+      font-weight: 900;
+      margin: 6px 8px 6px;
+      color: var(--accent2);
+    }
+    .resultText{
+      font-size: 18px;
+      line-height:1.35;
+      color: var(--text);
+      margin: 10px 10px 0;
+    }
+    .small{
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* floating sparks */
+    @keyframes floatUp {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+      10%  { opacity: 1; }
+      100% { transform: translateY(-900px) rotate(260deg); opacity: 0; }
+    }
+    .spark{
+      position: fixed;
+      bottom: -40px;
+      width: 18px;
+      height: 18px;
+      pointer-events:none;
+      opacity:0;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,.35));
+      animation: floatUp 6s linear forwards;
+    }
+    .spark::before{
+      content:"✦";
+      display:block;
+      font-size: 20px;
+      color: rgba(77,208,225,.95);
+      text-shadow: 0 0 14px rgba(77,208,225,.35);
+    }
+    .spark.alt::before{
+      content:"✹";
+      color: rgba(255,183,77,.95);
+      text-shadow: 0 0 14px rgba(255,183,77,.35);
+    }
+
+    @media (max-width: 680px){
+      h1{font-size:28px}
+      .question{font-size:20px}
+      .answers{grid-template-columns: 1fr;}
+      .toprow{justify-content:center}
+      .progress{width: 100%;}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Квест на 23 февраля</h1>
+    <p class="subtitle"><strong>10 вопросов → результат → готовое поздравление</strong></p>
+
+    <div class="card" id="card">
+      <div class="content">
+        <div class="toprow">
+          <div class="badge" id="badge">🎯 Вопрос <span id="qnum">1</span>/10</div>
+          <div class="progress" aria-label="progress"><div class="bar" id="bar"></div></div>
+        </div>
+
+        <div id="screenQuiz">
+          <div class="question" id="question">...</div>
+          <div class="answers" id="answers"></div>
+          <div class="footerRow">
+            <button class="ghost" id="btnBack" onclick="goBack()" disabled>← Назад</button>
+            <button class="ghost" onclick="restart()">Сбросить</button>
+          </div>
+          <div class="small">Подсказка: выбирай интуитивно. Это про настроение, а не про “правильно/неправильно”.</div>
+        </div>
+
+        <div id="screenResult" style="display:none;">
+          <div class="resultTitle" id="resultTitle">...</div>
+          <div class="resultText" id="resultText">...</div>
+          <div class="footerRow">
+            <button class="primary" onclick="restart()">Пройти ещё раз</button>
+            <button class="ghost" onclick="copyResult()">Скопировать результат</button>
+          </div>
+          <div class="small">Можно вставить текст в чат/поздравление или распечатать как мини-открытку.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Типажи: Вадим (debug), Влад (дзен/логика), Олег (оптимизация), Андрей (стратегия)
+    const TYPES = ["vadim","vlad","oleg","andrey"];
+
+    const typeMeta = {
+      vadim: {
+        title: "🛠️ Ты — Вадим: «Не паникую. Дебажу.»",
+        text:
+`Твой суперскилл — сохранять хладнокровие, когда у остальных уже “горит”.
+Ты видишь проблему как кейс, а не как трагедию.
+
+С 23 февраля! Пусть задачи решаются с первого раза,
+а если нет — пусть хотя бы лог будет информативный 😄`
+      },
+      vlad: {
+        title: "🧘 Ты — Влад: «Дзен. Логика. Точка опоры.»",
+        text:
+`Ты умеешь держать равновесие в хаосе: пока вокруг суета —
+ты спокойно раскладываешь всё по полочкам.
+
+С 23 февраля! Пусть в жизни будет больше стабильных релизов,
+и меньше внезапных “а давайте срочно” 🚀`
+      },
+      oleg: {
+        title: "⚙️ Ты — Олег: «Не драматизирую. Оптимизирую.»",
+        text:
+`Твой стиль — делать лучше, быстрее и без лишнего шума.
+Если что-то можно упростить — ты уже это упростил.
+
+С 23 февраля! Пусть KPI растут, процессы становятся легче,
+а результат радует тебя и команду 💪`
+      },
+      andrey: {
+        title: "♟️ Ты — Андрей: «Стратегия + ответ + кофе.»",
+        text:
+`Ты — человек, который видит картину целиком.
+Там, где другие сомневаются, ты собираешь план и ведёшь к результату.
+
+С 23 февраля! Пусть решения приходят легко,
+кофе — всегда вовремя, а команда — на одной волне ☕`
+      }
+    };
+
+    // 10 вопросов. Каждый вариант добавляет очки типажам.
+    // Можно легко заменить формулировки/варианты под конкретных людей.
+    const questions = [
+      {
+        q: "Срочно прилетает баг в прод. Твоя первая реакция?",
+        a: [
+          { t:"Открываю логи. Панике вход воспрещён.", s:{vadim:3, oleg:1} },
+          { t:"Собираю контекст: что меняли, где сломалось.", s:{andrey:3, vlad:1} },
+          { t:"Сначала стабилизирую ситуацию. Потом лечу причину.", s:{vlad:3, andrey:1} },
+          { t:"Нахожу узкое место и чиню так, чтобы не повторилось.", s:{oleg:3, vadim:1} }
+        ]
+      },
+      {
+        q: "Выдали задачу: “сделай красиво и быстро”. Что выбираешь?",
+        a: [
+          { t:"Быстро и надёжно. Красиво — вторым коммитом.", s:{vadim:2, oleg:2} },
+          { t:"Красиво и логично: структура важнее скорости.", s:{vlad:3} },
+          { t:"Красиво, но с оптимизацией: без лишних движений.", s:{oleg:3} },
+          { t:"Уточняю критерии и планирую — потом делаю быстро.", s:{andrey:3} }
+        ]
+      },
+      {
+        q: "Твой любимый тип задач?",
+        a: [
+          { t:"Разобраться, почему не работает, и победить.", s:{vadim:3} },
+          { t:"Сложная логика, где нужен порядок и ясность.", s:{vlad:3} },
+          { t:"Ускорить, упростить, автоматизировать.", s:{oleg:3} },
+          { t:"Собрать требования, договориться, довести до результата.", s:{andrey:3} }
+        ]
+      },
+      {
+        q: "В команде спор. Ты…",
+        a: [
+          { t:"Покажу факты: вот логи/тесты/воспроизведение.", s:{vadim:3, vlad:1} },
+          { t:"Сниму напряжение и предложу понятные правила.", s:{vlad:3, andrey:1} },
+          { t:"Скажу: “давайте проще” и предложу эффективный вариант.", s:{oleg:3, vlad:1} },
+          { t:"Синхронизирую всех и приму решение по приоритетам.", s:{andrey:3, oleg:1} }
+        ]
+      },
+      {
+        q: "Как ты относишься к дедлайнам?",
+        a: [
+          { t:"Они существуют, чтобы их пережить (без истерик).", s:{vadim:3} },
+          { t:"Если хаос — нужен ритм. Дедлайн помогает.", s:{vlad:2, andrey:1} },
+          { t:"Люблю дедлайны: они заставляют резать лишнее.", s:{oleg:3} },
+          { t:"Дедлайн — часть стратегии. Важно управление рисками.", s:{andrey:3} }
+        ]
+      },
+      {
+        q: "Твой идеальный “боевой комплект” на проекте?",
+        a: [
+          { t:"Логи, дебаггер и спокойствие.", s:{vadim:3} },
+          { t:"Чёткая архитектура и понятные договорённости.", s:{vlad:3, andrey:1} },
+          { t:"Метрики, профилирование и автоматизация.", s:{oleg:3} },
+          { t:"Дорожная карта, приоритеты и кофе.", s:{andrey:3} }
+        ]
+      },
+      {
+        q: "Если что-то можно улучшить…",
+        a: [
+          { t:"Сначала починю, потом подумаю про улучшения.", s:{vadim:2, andrey:1} },
+          { t:"Улучшу так, чтобы было устойчиво и понятно.", s:{vlad:3} },
+          { t:"Сделаю рефактор/оптимизацию и выкину лишнее.", s:{oleg:3} },
+          { t:"Оценю эффект, согласую и внедрю по плану.", s:{andrey:3} }
+        ]
+      },
+      {
+        q: "Тебе дают новое: “разберись сам”.",
+        a: [
+          { t:"Окей. Я и так люблю копаться.", s:{vadim:3} },
+          { t:"Соберу модель, чтобы всё встало на места.", s:{vlad:3} },
+          { t:"Найду быстрый путь и сделаю аккуратно.", s:{oleg:3} },
+          { t:"Определю цель, риски и точки контроля.", s:{andrey:3} }
+        ]
+      },
+      {
+        q: "Что тебя больше всего бесит?",
+        a: [
+          { t:"Баг без воспроизведения.", s:{vadim:3} },
+          { t:"Нелогичные решения и хаос.", s:{vlad:3} },
+          { t:"Лишние действия и “ручной ад”.", s:{oleg:3} },
+          { t:"Когда нет ясных целей и приоритетов.", s:{andrey:3} }
+        ]
+      },
+      {
+        q: "Финальный: твоя фраза на 23 февраля?",
+        a: [
+          { t:"“Не паникуем. Дебажим.”", s:{vadim:3} },
+          { t:"“Стабильность — это тоже сила.”", s:{vlad:3} },
+          { t:"“Драму отменяем. Оптимизируем.”", s:{oleg:3} },
+          { t:"“План есть. Победа будет.”", s:{andrey:3} }
+        ]
+      }
+    ];
+
+    let idx = 0;
+    let history = []; // выбранные варианты (индексы)
+    let score = { vadim:0, vlad:0, oleg:0, andrey:0 };
+
+    const elQ = document.getElementById("question");
+    const elA = document.getElementById("answers");
+    const elQnum = document.getElementById("qnum");
+    const elBar = document.getElementById("bar");
+    const elBack = document.getElementById("btnBack");
+
+    const screenQuiz = document.getElementById("screenQuiz");
+    const screenResult = document.getElementById("screenResult");
+    const elResTitle = document.getElementById("resultTitle");
+    const elResText = document.getElementById("resultText");
+
+    function render(){
+      // progress
+      elQnum.textContent = (idx+1);
+      elBar.style.width = Math.round((idx)/questions.length*100) + "%";
+      elBack.disabled = (idx === 0);
+
+      // question
+      const q = questions[idx];
+      elQ.textContent = q.q;
+
+      // answers
+      elA.innerHTML = "";
+      q.a.forEach((opt, i) => {
+        const b = document.createElement("button");
+        b.className = "choice";
+        b.textContent = opt.t;
+        b.onclick = () => pick(i);
+        elA.appendChild(b);
+      });
+    }
+
+    function applyScore(delta, sign=1){
+      for (const k of Object.keys(delta)) score[k] += sign * delta[k];
+    }
+
+    function pick(i){
+      // если мы меняем ответ на текущем шаге (редко), сначала откатываем старый — но у нас шаг линейный
+      const q = questions[idx];
+      const opt = q.a[i];
+      applyScore(opt.s, +1);
+      history[idx] = i;
+
+      sparkBurst(6);
+
+      idx++;
+      if (idx >= questions.length){
+        showResult();
+      } else {
+        render();
+      }
+    }
+
+    function goBack(){
+      if (idx <= 0) return;
+      // возвращаемся на предыдущий вопрос и откатываем его очки
+      idx--;
+      const prevPick = history[idx];
+      if (prevPick !== undefined){
+        applyScore(questions[idx].a[prevPick].s, -1);
+        history[idx] = undefined;
+      }
+      render();
+    }
+
+    function showResult(){
+      elBar.style.width = "100%";
+
+      // найти победителя
+      let best = "vadim";
+      for (const t of TYPES){
+        if (score[t] > score[best]) best = t;
+      }
+
+      // небольшая “тай-брейк” логика: если равенство — выбираем по приоритету
+      const maxVal = Math.max(...TYPES.map(t=>score[t]));
+      const tied = TYPES.filter(t => score[t] === maxVal);
+      if (tied.length > 1){
+        const priority = ["andrey","oleg","vlad","vadim"];
+        best = priority.find(p => tied.includes(p)) || tied[0];
+      }
+
+      elResTitle.textContent = typeMeta[best].title;
+      elResText.textContent = typeMeta[best].text;
+
+      screenQuiz.style.display = "none";
+      screenResult.style.display = "block";
+
+      sparkBurst(18);
+    }
+
+    function restart(){
+      idx = 0;
+      history = [];
+      score = { vadim:0, vlad:0, oleg:0, andrey:0 };
+      screenResult.style.display = "none";
+      screenQuiz.style.display = "block";
+      render();
+      sparkBurst(10);
+    }
+
+    function copyResult(){
+      const txt = elResTitle.textContent + "\n\n" + elResText.textContent;
+      navigator.clipboard?.writeText(txt).then(() => {
+        sparkBurst(10);
+        alert("Скопировано!");
+      }).catch(() => {
+        alert("Не получилось скопировать. Можно выделить вручную 🙂");
+      });
+    }
+
+    // Анимация “искорок”
+    function spawnSpark(){
+      const s = document.createElement("div");
+      s.className = "spark" + (Math.random() > 0.55 ? " alt" : "");
+      s.style.left = Math.random() * window.innerWidth + "px";
+      s.style.animationDuration = (4.8 + Math.random()*2.6) + "s";
+      s.style.transform = "translateY(0) rotate(" + (Math.random()*40) + "deg)";
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 8000);
+    }
+    function sparkBurst(n=8){
+      for (let i=0;i<n;i++){
+        setTimeout(spawnSpark, i*80);
+      }
+    }
+    // фоновая “легкая” анимация
+    setInterval(() => { if (Math.random() < 0.45) spawnSpark(); }, 650);
+
+    // старт
+    render();
+    sparkBurst(8);
+  </script>
+</body>
+</html>
