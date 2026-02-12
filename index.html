@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Квест 23 февраля</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- фоновые "звёздочки" -->
+  <div class="stars" aria-hidden="true"></div>
+
+  <header class="header">
+    <h1>Квест на 23 февраля</h1>
+
+    <div class="meta">
+      <div class="badge" id="badge">Вопрос <span id="qnum">1</span>/<span id="qtotal">12</span></div>
+      <div class="progress" aria-label="progress">
+        <div class="bar" id="bar"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- LEFT: Quiz -->
+    <section class="card quiz" id="quizCard">
+      <div class="question" id="question">...</div>
+      <div class="answers" id="answers"></div>
+
+      <div class="controls">
+        <button class="btn ghost" id="btnBack">← Назад</button>
+        <button class="btn ghost" id="btnRestart">Сбросить</button>
+      </div>
+    </section>
+
+    <!-- RIGHT: Video -->
+    <aside class="card media" id="mediaCard">
+      <div class="mediaTitle"> </div>
+
+      <div class="videoWrap" id="videoWrap" style="display:none;">
+  <video id="qVideo" controls playsinline preload="metadata" style="display:none;"></video>
+  <img id="qImage" alt="" style="display:none;" />
+</div>
+<div class="videoCaption" id="videoCaption" style="display:none;"></div>
+      <div class="noVideo" id="noVideo" style="display:none;">
+        Тут появится видео для этого вопроса 🙂
+      </div>
+    </aside>
+  </main>
+
+  <section class="card result" id="resultScreen" style="display:none;">
+    <div class="resultTitle" id="resultTitle">Результат</div>
+    <div class="resultText" id="resultText"></div>
+    <div class="controls">
+      <button class="btn primary" id="btnAgain">Пройти ещё раз</button>
+      <button class="btn ghost" id="btnCopy">Скопировать</button>
+    </div>
+  </section>
+
+  <script src="questions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
