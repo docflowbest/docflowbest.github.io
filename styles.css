@@ -197,7 +197,7 @@ body{
 }
 
 .blurb-text{
-  font-size:15px;
+  font-size:20px;
   font-style:italic;
   color:var(--muted);
   margin-bottom:16px;
@@ -205,14 +205,14 @@ body{
 }
 
 .greeting-text{
-  font-size:18px;
+  font-size:20px;
   margin-bottom:20px;
   text-align:left;
 }
 
 .hq-block{
   text-align:left;
-  font-size:14px;
+  font-size:19px;
   padding:16px;
   border-radius:14px;
   border:1px solid rgba(255,255,255,.2);
@@ -223,7 +223,7 @@ body{
 .hq-title{
   display:block;
   font-weight:bold;
-  margin-bottom:8px;
+  margin: bottom 14px;
   color:var(--accent2);
 }
 
